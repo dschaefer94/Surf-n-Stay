@@ -36,7 +36,6 @@ public class OfferHandler implements HttpHandler {
                                 ",\"isPublished\":" + o.getPublished() +
                                 "}")
                         .collect(java.util.stream.Collectors.joining(",", "[", "]"));
-
                 statusCode = 200;
             }
             case "POST" -> {

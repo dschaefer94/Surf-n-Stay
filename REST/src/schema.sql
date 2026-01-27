@@ -4,9 +4,9 @@
 PRAGMA foreign_keys = ON;
 
 -- 2. Tabellen löschen (Optional, falls du immer frisch starten willst - hier auskommentiert)
-DROP TABLE IF EXISTS bookings;
-DROP TABLE IF EXISTS offers;
-DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS bookings;
+-- DROP TABLE IF EXISTS offers;
+-- DROP TABLE IF EXISTS users;
 
 -- 3. Tabelle Users
 CREATE TABLE IF NOT EXISTS users (
