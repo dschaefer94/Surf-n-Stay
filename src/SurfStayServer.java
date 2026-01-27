@@ -132,7 +132,6 @@ public class SurfStayServer {
                             rs.getInt("has_internet")
                     );
 
-// ... }
                     jsonList.add(json);
                 }
             }
