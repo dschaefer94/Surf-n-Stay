@@ -75,6 +75,10 @@ public class Offer {
         return startDate;
     }
 
+    public String getEndDate(){
+        return endDate;
+    }
+
     public boolean getHasFireplace() {
         return hasFireplace;
     }
@@ -85,6 +89,10 @@ public class Offer {
 
     public boolean getHasInternet() {
         return hasInternet;
+    }
+
+    public boolean getHasSauna(){
+        return hasSauna;
     }
 
     public boolean getPublished() {
@@ -123,6 +131,10 @@ public class Offer {
         this.startDate = startDate;
     }
 
+    public void setEndDate(String endDate){
+        this.endDate = endDate;
+    }
+
     public void setHasFireplace(boolean hasFireplace) {
         this.hasFireplace = hasFireplace;
     }
@@ -133,6 +145,10 @@ public class Offer {
 
     public void setHasInternet(boolean hasInternet) {
         this.hasInternet = hasInternet;
+    }
+
+    public void setHasSauna(boolean hasSauna){
+       this.hasSauna = hasSauna;
     }
 
     public void setPublished(boolean published) {

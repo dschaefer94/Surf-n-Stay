@@ -32,9 +32,11 @@ public class OfferDao {
                 offer.setPrice(rs.getString("price"));
                 offer.setBeds(rs.getInt("beds"));
                 offer.setStartDate(rs.getString("start_date"));
+                offer.setEndDate(rs.getString("end_date"));
                 offer.setHasFireplace(rs.getInt("has_fireplace") == 1);
                 offer.setSmoker(rs.getInt("is_smoker") == 1);
                 offer.setHasInternet(rs.getInt("has_internet") == 1);
+                offer.setHasSauna(rs.getInt("has_Sauna") == 1);
                 offer.setPublished(rs.getInt("is_published") == 1);
 
                 list.add(offer);

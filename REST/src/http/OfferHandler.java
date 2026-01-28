@@ -30,9 +30,11 @@ public class OfferHandler implements HttpHandler {
                                 ",\"price\":\"" + o.getPrice() + "\"" +
                                 ",\"beds\":" + o.getBeds() +
                                 ",\"startDate\":\"" + o.getStartDate() + "\"" +
+                                ",\"endDate\":\"" + o.getEndDate() + "\"" +
                                 ",\"hasFireplace\":" + o.getHasFireplace() +
                                 ",\"isSmoker\":" + o.getSmoker() +
                                 ",\"hasInternet\":" + o.getHasInternet() +
+                                ",\"hasSauna\":" + o.getHasSauna() +
                                 ",\"isPublished\":" + o.getPublished() +
                                 "}")
                         .collect(java.util.stream.Collectors.joining(",", "[", "]"));
