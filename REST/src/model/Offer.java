@@ -2,13 +2,13 @@ package model;
 
 public class Offer {
 
-    private long id;
-    private long ownerId;
+    private int id;
+    private int ownerId;
     private Double lat;
     private Double lon;
     private String address;
     private String price;
-    private Integer beds;
+    private int beds;
     private String startDate;  // oder LocalDate, wenn du willst
     private String endDate;
     private boolean hasSauna;
@@ -21,33 +21,11 @@ public class Offer {
     public Offer() {
     }
 
-    // Optional: Full constructor
-    public Offer(long id, long ownerId, Double lat, Double lon, String address, String price,
-                 Integer beds, String startDate, String endDate,
-                 boolean hasSauna, boolean hasFireplace, boolean isSmoker,
-                 boolean hasPets, boolean hasInternet, boolean isPublished) {
-        this.id = id;
-        this.ownerId = ownerId;
-        this.lat = lat;
-        this.lon = lon;
-        this.address = address;
-        this.price = price;
-        this.beds = beds;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.hasSauna = hasSauna;
-        this.hasFireplace = hasFireplace;
-        this.isSmoker = isSmoker;
-        this.hasPets = hasPets;
-        this.hasInternet = hasInternet;
-        this.isPublished = isPublished;
-    }
-
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public long getOwnerId() {
+    public int getOwnerId() {
         return ownerId;
     }
 
@@ -67,7 +45,7 @@ public class Offer {
         return price;
     }
 
-    public Integer getBeds() {
+    public int getBeds() {
         return beds;
     }
 
@@ -87,6 +65,10 @@ public class Offer {
         return isSmoker;
     }
 
+    public boolean getHasPets(){
+        return hasPets;
+    }
+
     public boolean getHasInternet() {
         return hasInternet;
     }
@@ -99,11 +81,11 @@ public class Offer {
         return isPublished;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setOwnerId(long ownerId) {
+    public void setOwnerId(int ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -123,7 +105,7 @@ public class Offer {
         this.price = price;
     }
 
-    public void setBeds(Integer beds) {
+    public void setBeds(int beds) {
         this.beds = beds;
     }
 
@@ -133,6 +115,10 @@ public class Offer {
 
     public void setEndDate(String endDate){
         this.endDate = endDate;
+    }
+
+    public void setHasPets(boolean hasPets){
+        this.hasPets = hasPets;
     }
 
     public void setHasFireplace(boolean hasFireplace) {
@@ -152,7 +138,7 @@ public class Offer {
     }
 
     public void setPublished(boolean published) {
-        isPublished = published;
+        this.isPublished = published;
     }
 
 
