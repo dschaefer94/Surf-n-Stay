@@ -11,34 +11,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OfferDao {
-    public static List<Offer> getAllOffers() {
+    public static List<Offer> selectOffers(String id) {
         List<Offer> list = new ArrayList<>();
-        String sql = """
-                    SELECT id, owner_id, lat, lon, address, price, beds, start_date, end_date,
-                           has_pets, has_fireplace, is_smoker, has_internet, has_sauna, is_published
-                    FROM offers
-                """;
+        String sql = "SELECT * FROM offers";
+        boolean hasId = !id.isEmpty();
+        if (hasId) {
+            sql += " WHERE owner_id = ?";
+        }
         try (Connection conn = Database.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Offer offer = new Offer();
-                offer.setId(rs.getInt("id"));
-                offer.setOwnerId(rs.getInt("owner_id"));
-                offer.setLat(rs.getDouble("lat"));
-                offer.setLon(rs.getDouble("lon"));
-                offer.setAddress(rs.getString("address"));
-                offer.setPrice(rs.getString("price"));
-                offer.setBeds(rs.getInt("beds"));
-                offer.setStartDate(rs.getString("start_date"));
-                offer.setEndDate(rs.getString("end_date"));
-                offer.setHasPets(rs.getInt("has_pets") == 1);
-                offer.setHasFireplace(rs.getInt("has_fireplace") == 1);
-                offer.setSmoker(rs.getInt("is_smoker") == 1);
-                offer.setHasInternet(rs.getInt("has_internet") == 1);
-                offer.setHasSauna(rs.getInt("has_sauna") == 1);
-                offer.setPublished(rs.getInt("is_published") == 1);
-                list.add(offer);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (hasId) {
+                try {
+                    ps.setInt(1, Integer.parseInt(id));
+                } catch (NumberFormatException e) {
+                    System.err.println("ID ist keine gültige Zahl: " + id);
+                    return list;
+                }
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Offer offer = new Offer();
+                    offer.setId(rs.getInt("id"));
+                    offer.setOwnerId(rs.getInt("owner_id"));
+                    offer.setLat(rs.getDouble("lat"));
+                    offer.setLon(rs.getDouble("lon"));
+                    offer.setAddress(rs.getString("address"));
+                    offer.setPrice(rs.getString("price"));
+                    offer.setBeds(rs.getInt("beds"));
+                    offer.setStartDate(rs.getString("start_date"));
+                    offer.setEndDate(rs.getString("end_date"));
+                    offer.setHasPets(rs.getInt("has_pets") == 1);
+                    offer.setHasFireplace(rs.getInt("has_fireplace") == 1);
+                    offer.setSmoker(rs.getInt("is_smoker") == 1);
+                    offer.setHasInternet(rs.getInt("has_internet") == 1);
+                    offer.setHasSauna(rs.getInt("has_sauna") == 1);
+                    offer.setPublished(rs.getInt("is_published") == 1);
+                    list.add(offer);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

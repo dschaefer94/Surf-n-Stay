@@ -7,6 +7,7 @@ import model.Offer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.Helper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -18,13 +19,29 @@ public class OfferHandler implements HttpHandler {
         String method = exchange.getRequestMethod();
         switch (method) {
             case "GET" -> {
-                List<Offer> offers = OfferDao.getAllOffers();
-                JSONArray array = new JSONArray();
-                for (Offer o : offers) {
-                    JSONObject json = getJsonObject(o);
-                    array.put(json);
+                String path = exchange.getRequestURI().getPath();
+                String[] teile = path.split("/");
+                if (teile.length == 3) {
+                    String id = teile[2];
+                    List<Offer> offers = OfferDao.selectOffers(id);
+                    if (!offers.isEmpty()) {
+                        JSONArray array = new JSONArray();
+                        for (Offer o : offers) {
+                            array.put(getJsonObject(o));
+                        }
+                        Helper.sendResponse(exchange, 200, array.toString());
+                    } else {
+                        Helper.sendResponse(exchange, 404, "{\"message\":\"Offer not found\"}");
+                    }
                 }
-                Helper.sendResponse(exchange, 200, array.toString());
+                else {
+                    List<Offer> offers = OfferDao.selectOffers("");
+                    JSONArray array = new JSONArray();
+                    for (Offer o : offers) {
+                        array.put(getJsonObject(o));
+                    }
+                    Helper.sendResponse(exchange, 200, array.toString());
+                }
             }
             case "POST" -> {
                 try (InputStream is = exchange.getRequestBody()) {
@@ -75,7 +92,7 @@ public class OfferHandler implements HttpHandler {
                     Helper.sendResponse(exchange, 500, "{\"error\":\"server error\"}");
                 }
             }
-            case "DELETE" -> {
+            case "UPDATE" -> {
                 System.out.println("delete");
             }
             default -> {
