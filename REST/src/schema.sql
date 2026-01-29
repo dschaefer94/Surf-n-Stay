@@ -43,12 +43,6 @@ INSERT OR IGNORE INTO users (id, username, display_name) VALUES (2, 'other', 'Su
 
 
 -- Angebot 1: Hvide Sande
-INSERT OR IGNORE INTO offers (
-    id, owner_id, address, lat, lon, price, beds,
-    has_sauna, has_fireplace, has_internet, is_published,
-    start_date, end_date
-);
--- Angebot 1: Hvide Sande
 INSERT OR IGNORE INTO offers (id, owner_id, address, lat, lon, price, beds, has_sauna, has_fireplace, has_internet, is_published)
 VALUES (1, 1, 'Skallevej 5-1', 55.0292782981621, 10.252526199503954, '25 EUR', 2, 1, 1, 1, 1);
 
