@@ -1,0 +1,15 @@
+{
+  "owner_id": 2,
+  "lat": 52.5200,
+  "lon": 13.4050,
+  "price": "450.00",
+  "beds": 2,
+  "start_date": "2024-06-01",
+  "end_date": "2024-06-15",
+  "has_sauna": true,
+  "has_fireplace": false,
+  "is_smoker": false,
+  "has_pets": true,
+  "has_internet": true,
+  "is_published": true
+}

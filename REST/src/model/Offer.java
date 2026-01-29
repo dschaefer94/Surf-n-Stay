@@ -6,7 +6,6 @@ public class Offer {
     private int ownerId;
     private Double lat;
     private Double lon;
-    private String address;
     private String price;
     private int beds;
     private String startDate;  // oder LocalDate, wenn du willst
@@ -35,10 +34,6 @@ public class Offer {
 
     public Double getLon() {
         return lon;
-    }
-
-    public String getAddress() {
-        return address;
     }
 
     public String getPrice() {
@@ -95,10 +90,6 @@ public class Offer {
 
     public void setLon(Double lon) {
         this.lon = lon;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public void setPrice(String price) {

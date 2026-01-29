@@ -21,20 +21,16 @@ public class Database {
 
             System.out.println("Lade Datenbankschema aus " + SQL_FILE + " ...");
             InputStream inputStream = Database.class.getResourceAsStream(SQL_FILE);
-
             if (inputStream == null) {
                 System.err.println("FEHLER: Konnte schema.sql nicht finden!");
                 return;
             }
-
-            // Hier wird sqlContent definiert und die Kommentare werden gefiltert
             String sqlContent = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
                     .lines()
                     .filter(line -> !line.trim().startsWith("--")) // Entfernt SQL-Kommentare
                     .collect(Collectors.joining(" "));
 
             String[] commands = sqlContent.split(";");
-
             for (String command : commands) {
                 String trimmedCommand = command.trim();
                 if (!trimmedCommand.isEmpty()) {
@@ -53,7 +49,10 @@ public class Database {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        Connection conn = DriverManager.getConnection(DB_URL);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA foreign_keys = ON;");
+        }
+        return conn;
     }
-
 }
