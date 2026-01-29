@@ -36,7 +36,7 @@ public class Angebot {
         this.hasInternet = hasInternet;
         this.hasSauna = hasSauna;
         this.isPublished = isPublished;
-        this.distanz = -1; // Initial distance set to -1 (unknown)
+        this.distanz = -1;
     }
 
     public long getId() {
@@ -156,6 +156,6 @@ public class Angebot {
     }
 
     public void setPublished(boolean isPublished) {
-        this.isPublished = this.isPublished;
+        this.isPublished = isPublished;
     }
 }
