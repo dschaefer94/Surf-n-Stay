@@ -1,0 +1,15 @@
+{
+  "ownerId": 1,
+  "lat": 51.723,
+  "lon": 8.7544,
+  "price": "89.90 EUR",
+  "beds": 3,
+  "startDate": "2026-02-15",
+  "endDate": "2026-02-20",
+  "hasPets": true,
+  "hasFireplace": false,
+  "isSmoker": false,
+  "hasInternet": true,
+  "hasSauna": true,
+  "isPublished": false
+}

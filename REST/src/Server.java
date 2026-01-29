@@ -14,7 +14,6 @@ public class Server {
         server.createContext("/", ex ->
                 Helper.sendResponse(ex, 404, "{\"error\":\"Voll verirrt!\"}")
         );
-
         Database.initialize();
         server.start();
         System.out.println("Server läuft auf http://localhost:8080/offers");
