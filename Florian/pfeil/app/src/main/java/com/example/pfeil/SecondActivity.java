@@ -9,5 +9,9 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+
+        SwipeArrowView swipeArrowView = findViewById(R.id.swipeArrowView);
+        swipeArrowView.setSwipeDirection(SwipeArrowView.Direction.RTL);
+        swipeArrowView.setTargetActivityClass(MyOffersActivity.class);
     }
 }
