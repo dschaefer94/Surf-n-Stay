@@ -21,8 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -36,25 +38,29 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_REQUEST_CODE = 1728813;
-    private TextView tvData;
+
     private LocationManager locationManager;
     private static double SuchRadius = 12000.0;
-    private ListView lvPlaces;
+    private List<Angebot> alleAngebote = new ArrayList<>();
     private List<Angebot> angebote = new ArrayList<>();
+
     private SeekBar seekRadius;
     private TextView tvRadius;
     private EditText etAddress;
     private Button btnSearchAddress, btnUseCurrentLocation;
     private Location activeLocation;
+    private RecyclerView rvOffers;
+    private OfferAdapter offerAdapter;
+
 
 
     LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location loc) {
-            activeLocation=loc;
-            findPlacesInRadius(activeLocation, angebote);
+            activeLocation = loc;
+            updateDistances();
+            filterByRadius();
             sortPlacesByDistance(angebote);
-            renderPlaces(angebote);
-            // log distances when location updates arrive
+            offerAdapter.setAngebote(angebote);
             for (int i = 0; i < angebote.size(); i++) {
                 Log.d("INFO", "Angebot " + i + ": " + angebote.get(i).distanz);
             }
@@ -85,39 +91,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void findPlacesInRadius(Location currentLocation, List<Angebot> angebote) {
-        for (Angebot angebot : angebote) {
+    private void updateDistances() {
+        if (activeLocation == null || alleAngebote == null) return;
+
+        for (Angebot a : alleAngebote) {
             float[] results = new float[1];
-            Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(),
-                    angebot.lat, angebot.lon, results);
-            float distanceInMeters = results[0];
-            angebot.distanz = distanceInMeters;
+            Location.distanceBetween(
+                    activeLocation.getLatitude(),
+                    activeLocation.getLongitude(),
+                    a.lat,
+                    a.lon,
+                    results
+            );
+
+            a.distanz = results[0] > 0 ? results[0] : Double.MAX_VALUE;
         }
     }
 
-    private void sortPlacesByDistance(List<Angebot> angebote) {
-        Collections.sort(angebote, (a, b) -> Double.compare(a.distanz, b.distanz));
-    }
 
-    private void renderPlaces(List<Angebot> angebote) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < angebote.size(); i++) {
-            Angebot angebot = angebote.get(i);
-            if (angebot.distanz > 0 && angebot.distanz <= SuchRadius) {
-                sb.append("Adresse:                ").append(angebot.address).append("\n");
-                sb.append("Distanz:                 ").append(String.format("%.2f", angebot.distanz)).append(" Meter\n");
-                sb.append("Preis:                      ").append(angebot.price).append("\n");
-                sb.append("Anzahl Betten:       ").append(angebot.beds).append("\n");
-                sb.append("Hat Internet:            ").append(angebot.hasInternet ? "Ja" : "Nein").append("\n");
-                sb.append("Haustiere erlaubt:  ").append(angebot.hasPets ? "Ja" : "Nein").append("\n");
-                sb.append("Hat Saune:              ").append(angebot.hasSauna ? "Ja" : "Nein").append("\n");
-                sb.append("Hat Kamin:              ").append(angebot.hasFireplace ? "Ja" : "Nein").append("\n");
-                sb.append("Ist veröffentlicht:    ").append(angebot.isPublished ? "Ja" : "Nein").append("\n");
-                sb.append("-----------------------------------------------\n\n");
+    private void filterByRadius() {
+        if (alleAngebote == null) return;
+
+        angebote.clear();
+
+        for (Angebot a : alleAngebote) {
+            if (a.distanz > 0 && a.distanz <= SuchRadius) {
+                angebote.add(a);
             }
         }
-        tvData.setText(sb.toString());
     }
+
+
+
+    private void sortPlacesByDistance(List<Angebot> angebote) {
+        Collections.sort(angebote, (a, b) -> {
+            if (a.distanz < 0) return 1;
+            if (b.distanz < 0) return -1;
+            return Double.compare(a.distanz, b.distanz);
+        });
+
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -132,11 +146,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 try {
                     if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && locationManager != null) {
-                        Location activeLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        activeLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         if (activeLocation != null && angebote != null && !angebote.isEmpty()) {
-                            findPlacesInRadius(activeLocation, angebote);
+                            updateDistances();
+                            filterByRadius();
                             sortPlacesByDistance(angebote);
-                            renderPlaces(angebote);
+                            offerAdapter.setAngebote(angebote);
                         }
                     }
                 } catch (SecurityException e) {
@@ -153,6 +168,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        rvOffers = findViewById(R.id.rvOffers);
+        rvOffers.setLayoutManager(new LinearLayoutManager(this));
+
+        offerAdapter = new OfferAdapter(angebote);
+        rvOffers.setAdapter(offerAdapter);
+
         seekRadius = findViewById(R.id.seekRadius);
         tvRadius = findViewById(R.id.tvRadius);
 
@@ -172,22 +193,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (!angebote.isEmpty() && locationManager != null) {
-                    try {
-                        if (MainActivity.this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (activeLocation != null&&!angebote.isEmpty()) {
-                                findPlacesInRadius(activeLocation, angebote);
-                                sortPlacesByDistance(angebote);
-                                renderPlaces(angebote);
-                            }
-                        } else {
-                            Log.w("PERM", "onStopTrackingTouch: no location permission");
-                        }
-                    } catch (SecurityException e) {
-                        Log.e("PERM", "getLastKnownLocation failed: " + e.getMessage());
-                    }
-                }
+                filterByRadius();
+                sortPlacesByDistance(angebote);
+                offerAdapter.setAngebote(angebote);
             }
 
             @Override
@@ -199,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        tvData = findViewById(R.id.tvData);
+
         etAddress = findViewById(R.id.etAddress);
         btnSearchAddress = findViewById(R.id.btnSearchAddress);
         btnUseCurrentLocation = findViewById(R.id.btnUseCurrentLocation);
@@ -207,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                URL url = new URL("http://10.0.2.2:8080/offer");
+                URL url = new URL("http://10.0.2.2:8080/offers");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
 
@@ -218,11 +226,28 @@ public class MainActivity extends AppCompatActivity {
 
                 Gson gson = new Gson();
                 Type listType = new TypeToken<List<Angebot>>() {}.getType();
-                angebote = gson.fromJson(jsonString, listType);
+                List<Angebot> loaded = gson.fromJson(jsonString, listType);
+
+                runOnUiThread(() -> {
+                    alleAngebote.clear();
+                    if (loaded != null) alleAngebote.addAll(loaded);
+
+                    angebote.clear();
+                    angebote.addAll(alleAngebote);
+
+                    offerAdapter.setAngebote(angebote);
+
+                    if (activeLocation != null) {
+                        updateDistances();
+                        filterByRadius();
+                        sortPlacesByDistance(angebote);
+                        offerAdapter.setAngebote(angebote);
+                    }
+                });
+
+
                 runOnUiThread(() -> {
                     Log.d("INFO", "JSON:  " + jsonString);
-                    tvData.setText("Angebote geladen: " + (angebote != null ? angebote.size() : 0));
-
                     if (locationManager == null) {
                         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
                     }
@@ -231,11 +256,11 @@ public class MainActivity extends AppCompatActivity {
                                 && locationManager != null && angebote != null && !angebote.isEmpty()) {
                             Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             if (lastLocation != null) {
-                                findPlacesInRadius(lastLocation, angebote);
+                                activeLocation= lastLocation;
+                                updateDistances();
+                                filterByRadius();
                                 sortPlacesByDistance(angebote);
-                                renderPlaces(angebote);
-
-                                // Log Distanzen nach Berechnung
+                                offerAdapter.setAngebote(angebote);
                                 for (int i = 0; i < angebote.size(); i++) {
                                     Log.d("INFO", "Angebot " + i + ": " + angebote.get(i).distanz);
                                 }
@@ -248,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 runOnUiThread(() ->
-                        tvData.setText("Fehler: " + e.getMessage())
+                        Log.d("INFO", "Fehler beim Laden der Angebote: " + e.getMessage())
                 );
             }
         }).start();
@@ -273,15 +298,16 @@ public class MainActivity extends AppCompatActivity {
                             fakeLocation.setLatitude(lat);
                             fakeLocation.setLongitude(lon);
 
-                            activeLocation=fakeLocation;
-                            findPlacesInRadius(activeLocation, angebote);
+                            activeLocation = fakeLocation;
+                            updateDistances();
+                            filterByRadius();
                             sortPlacesByDistance(angebote);
-                            renderPlaces(angebote);
+                            offerAdapter.setAngebote(angebote);
                         });
                     }
                 } catch (Exception e) {
                     runOnUiThread(() ->
-                            tvData.setText("Adresse nicht gefunden")
+                            Log.d("INFO", "Geocoding-Fehler: " + e.getMessage())
                     );
                 }
             }).start();
@@ -294,9 +320,11 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (loc != null) {
-                    findPlacesInRadius(loc, angebote);
+                    activeLocation = loc;
+                    updateDistances();
+                    filterByRadius();
                     sortPlacesByDistance(angebote);
-                    renderPlaces(angebote);
+                    offerAdapter.setAngebote(angebote);
                 }
             } catch (SecurityException e) {
                 Log.e("PERM", e.getMessage());
@@ -304,12 +332,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         stopGPSStream();
     }
-
     private void stopGPSStream() {
         if (locationManager != null) {
             locationManager.removeUpdates(locationListener);
