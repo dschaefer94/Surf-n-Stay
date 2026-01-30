@@ -11,7 +11,7 @@ public class Offer implements Serializable {
     @SerializedName("owner_id") // Map json "owner_id" zu java "ownerId"
     public int ownerId;
 
-    public String address;
+    transient public String address;
 
     public String price; // String, wegen "Kiste Bier"
 
@@ -22,22 +22,24 @@ public class Offer implements Serializable {
     public int beds;
 
     @SerializedName("has_sauna")
-    public int hasSauna;
+    public double hasSauna;
 
     @SerializedName("has_fireplace")
-    public int hasFireplace;
+    public double hasFireplace;
+    @SerializedName("is_smoker")
+    public boolean isSmoker;
 
     @SerializedName("has_pets")
-    public int hasPets;
+    public double hasPets;
 
     @SerializedName("has_internet")
-    public int hasInternet;
+    public double hasInternet;
 
     @SerializedName("start_date")
     public String startDate;
 
     @SerializedName("is_published")
-    public int isPublished; // 0 = Entwurf, 1 = Online
+    public boolean isPublished; // 0 = Entwurf, 1 = Online
 
     // Leerer Konstruktor wird von Gson benötigt
     public Offer() {}
