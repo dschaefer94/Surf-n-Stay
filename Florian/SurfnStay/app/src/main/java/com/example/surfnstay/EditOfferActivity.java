@@ -14,6 +14,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.location.Address;
+import android.location.Geocoder;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class EditOfferActivity extends AppCompatActivity {
 
@@ -52,34 +57,68 @@ public class EditOfferActivity extends AppCompatActivity {
         binding.etAddress.setText(currentOffer.address);
         binding.etPrice.setText(currentOffer.price);
         binding.etBeds.setText(String.valueOf(currentOffer.beds));
-        binding.cbSauna.setChecked(currentOffer.hasSauna == 1);
-        binding.cbFireplace.setChecked(currentOffer.hasFireplace == 1);
-        binding.cbPets.setChecked(currentOffer.hasPets == 1);
-        binding.cbInternet.setChecked(currentOffer.hasInternet == 1);
-        binding.switchPublished.setChecked(currentOffer.isPublished == 1);
+        binding.cbSauna.setChecked(currentOffer.hasSauna == true);
+        binding.cbFireplace.setChecked(currentOffer.hasFireplace == true);
+        binding.cbPets.setChecked(currentOffer.hasPets == true);
+        binding.cbInternet.setChecked(currentOffer.hasInternet == true);
+        binding.switchPublished.setChecked(currentOffer.isPublished == true);
     }
 
     private void saveOffer() {
-        // Daten aus UI ins Objekt schreiben
-        currentOffer.address = binding.etAddress.getText().toString();
+        // UI -> Objekt
+        String addressInput = binding.etAddress.getText().toString().trim(); // nur fürs Geocoding
         currentOffer.price = binding.etPrice.getText().toString();
+
         try {
             currentOffer.beds = Integer.parseInt(binding.etBeds.getText().toString());
-        } catch (NumberFormatException e) { currentOffer.beds = 1; }
+        } catch (NumberFormatException e) {
+            currentOffer.beds = 1;
+        }
 
-        currentOffer.hasSauna = binding.cbSauna.isChecked() ? 1 : 0;
-        currentOffer.hasFireplace = binding.cbFireplace.isChecked() ? 1 : 0;
-        currentOffer.hasPets = binding.cbPets.isChecked() ? 1 : 0;
-        currentOffer.hasInternet = binding.cbInternet.isChecked() ? 1 : 0;
-        currentOffer.isPublished = binding.switchPublished.isChecked() ? 1 : 0;
+        currentOffer.hasSauna = binding.cbSauna.isChecked();
+        currentOffer.hasFireplace = binding.cbFireplace.isChecked();
+        currentOffer.hasPets = binding.cbPets.isChecked();
+        currentOffer.hasInternet = binding.cbInternet.isChecked();
+        currentOffer.isPublished = binding.switchPublished.isChecked();
 
-        // Dummy GPS Daten (falls keine da sind)
-        if (currentOffer.lat == 0) currentOffer.lat = 56.0;
-        if (currentOffer.lon == 0) currentOffer.lon = 8.1;
-
-        // Senden
-        sendRequest(currentOffer.id == 0 ? "POST" : "PUT");
+        // Wenn du NUR Koordinaten senden willst: hier geocoden
+        if (!addressInput.isEmpty()) {
+            geocodeAddressAndSend(addressInput);
+        } else {
+            // Wenn keine Eingabe: entweder Fehler oder Default
+            Toast.makeText(this, "Bitte Ort/Adresse eingeben", Toast.LENGTH_SHORT).show();
+        }
     }
+
+    private void geocodeAddressAndSend(String addressInput) {
+        executor.execute(() -> {
+            try {
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                List<Address> results = geocoder.getFromLocationName(addressInput, 1);
+
+                if (results == null || results.isEmpty()) {
+                    handler.post(() ->
+                            Toast.makeText(this, "Adresse nicht gefunden", Toast.LENGTH_SHORT).show()
+                    );
+                    return;
+                }
+
+                Address a = results.get(0);
+                currentOffer.lat = a.getLatitude();
+                currentOffer.lon = a.getLongitude();
+
+                // Jetzt erst senden
+                sendRequest(currentOffer.id == 0 ? "POST" : "PUT");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                handler.post(() ->
+                        Toast.makeText(this, "Geocoding fehlgeschlagen", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
 
     private void deleteOffer() {
         if (currentOffer.id != 0) {
