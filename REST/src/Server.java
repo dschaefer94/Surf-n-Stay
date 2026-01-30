@@ -16,6 +16,6 @@ public class Server {
         );
         Database.initialize();
         server.start();
-        System.out.println("Server läuft auf http://localhost:8080/offers");
+        System.out.println("Server läuft auf http://localhost:8080");
     }
 }
