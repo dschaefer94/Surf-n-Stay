@@ -42,6 +42,13 @@ public class WheelAdapter extends RecyclerView.Adapter<WheelAdapter.ViewHolder> 
         return dataList.size();
     }
 
+    public String getItem(int position) {
+        if (position >= 0 && position < dataList.size()) {
+            return dataList.get(position);
+        }
+        return null;
+    }
+
     // Die ViewHolder-Klasse hält die Referenzen zu den Views
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
