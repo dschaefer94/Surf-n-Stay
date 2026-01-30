@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import db.Database;
 import http.UserHandler;
 import http.OfferHandler;
+import util.ErrorHandler;
 import util.Helper;
 
 public class Server {
@@ -12,10 +13,10 @@ public class Server {
         server.createContext("/user", new UserHandler());
         server.createContext("/offers", new OfferHandler());
         server.createContext("/", ex ->
-                Helper.sendResponse(ex, 404, "{\"error\":\"Voll verirrt!\"}")
+                Helper.sendResponse(ex, 404, ErrorHandler.errorMessage("Du hast dich voll verirrt lol!"))
         );
         Database.initialize();
         server.start();
-        System.out.println("Server läuft auf http://localhost:8080/offers");
+        System.out.println("Server läuft auf http://localhost:8080");
     }
 }

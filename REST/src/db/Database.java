@@ -52,6 +52,9 @@ public class Database {
         Connection conn = DriverManager.getConnection(DB_URL);
         try (Statement stmt = conn.createStatement()) {
             stmt.execute("PRAGMA foreign_keys = ON;");
+        } catch (SQLException e) {
+            conn.close();
+            throw e;
         }
         return conn;
     }
