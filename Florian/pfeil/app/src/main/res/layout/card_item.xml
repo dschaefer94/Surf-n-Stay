@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    app:cardBackgroundColor="#222222"
+    app:cardBackgroundColor="#888888"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:background="#121212">
 
         <TextView
             android:id="@+id/locationHeader"
@@ -44,6 +46,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tvPrice"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="8dp"
@@ -91,17 +94,28 @@
                 app:layout_constraintTop_toBottomOf="@id/lblBeds" />
 
             <TextView
+                android:id="@+id/tvStayDate"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:text="Feb.  Mo Tu We Th Fr Sa Su \n 6      2  3  4  5  6  7  8"
-                android:textColor="#FFA726"
-                android:typeface="monospace"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:background="#333333"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/ivCalendarIcon"
                 app:layout_constraintStart_toEndOf="@id/lblDate"
                 app:layout_constraintTop_toTopOf="@id/lblDate" />
+
+            <ImageView
+                android:id="@+id/ivCalendarIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/lblDate"
+                app:tint="#FFA726" />
 
 
             <TextView

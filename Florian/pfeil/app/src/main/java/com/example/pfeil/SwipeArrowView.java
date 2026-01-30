@@ -15,6 +15,16 @@ import android.view.View;
 
 public class SwipeArrowView extends View {
 
+    public interface OnColorChangedListener {
+        void onColorChanged(int color);
+    }
+
+    private OnColorChangedListener onColorChangedListener;
+
+    public void setOnColorChangedListener(OnColorChangedListener listener) {
+        this.onColorChangedListener = listener;
+    }
+
     public enum Direction {
         LTR, RTL
     }
@@ -89,6 +99,7 @@ public class SwipeArrowView extends View {
         canvas.drawPath(arrowPath, arrowPaint);
 
         Paint arrowheadPaint;
+        int currentColor;
 
         if (currentProgress > 0) {
             int startColor = Color.RED;
@@ -96,7 +107,7 @@ public class SwipeArrowView extends View {
             float red = Color.red(startColor) * (1 - currentProgress) + Color.red(endColor) * currentProgress;
             float green = Color.green(startColor) * (1 - currentProgress) + Color.green(endColor) * currentProgress;
             float blue = Color.blue(startColor) * (1 - currentProgress) + Color.blue(endColor) * currentProgress;
-            int currentColor = Color.rgb((int) red, (int) green, (int) blue);
+            currentColor = Color.rgb((int) red, (int) green, (int) blue);
 
             filledPaint.setColor(currentColor);
             filledPath.reset();
@@ -107,6 +118,11 @@ public class SwipeArrowView extends View {
             arrowheadPaint = filledPaint;
         } else {
             arrowheadPaint = arrowPaint;
+            currentColor = arrowPaint.getColor();
+        }
+
+        if (onColorChangedListener != null) {
+            onColorChangedListener.onColorChanged(currentColor);
         }
 
         float[] pos = new float[2];
