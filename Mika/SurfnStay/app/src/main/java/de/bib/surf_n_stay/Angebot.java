@@ -5,7 +5,7 @@ public class Angebot {
     int ownerId;
     double lat;
     double lon;
-    String address;
+//    String address;
     String price;
     int beds;
     String startDate;
@@ -18,14 +18,14 @@ public class Angebot {
     boolean isPublished;
     double distanz;
 
-    public Angebot(int id, int ownerId, double lat, double lon, String address, String price, int beds,
+    public Angebot(int id, int ownerId, double lat, double lon, String price, int beds,
                    String startDate, String endDate,boolean hasPets, boolean hasFireplace, boolean isSmoker,
                    boolean hasInternet, boolean hasSauna, boolean isPublished) {
         this.id = id;
         this.ownerId = ownerId;
         this.lat = lat;
         this.lon = lon;
-        this.address = address;
+       // this.address = address;
         this.price = price;
         this.beds = beds;
         this.startDate = startDate;
@@ -55,9 +55,9 @@ public class Angebot {
         return lon;
     }
 
-    public String getAddress() {
-        return address;
-    }
+  //  public String getAddress() {
+  //      return address;
+  //  }
 
     public String getPrice() {
         return price;
@@ -115,9 +115,9 @@ public class Angebot {
         this.lon = lon;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+ //   public void setAddress(String address) {
+ //       this.address = address;
+ //   }
 
     public void setPrice(String price) {
         this.price = price;
